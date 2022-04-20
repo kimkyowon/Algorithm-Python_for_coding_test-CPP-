@@ -1,0 +1,44 @@
+#include<bits/stdc++.h>
+#define INF 1e9 //1e9는 10억
+int d[10001] //거리 정보를 담을 배열
+vector<pair<int,int> > graph[10001]; //간선 정보를 담을 배열
+int V,E,start; //차례대로 정점 수, 간선 수 , 탐색 시작 노드
+
+void dijsktra(int start){
+    priority_queue<pair<int,int> > pq; //각 노드별로 탐색시 최단거리가 가장 짦은 노드를 택해야 하는데( <- 시간 O(V) ) 우선순위 큐(자동으로 오름차순 정렬)를 통해 O(Elog)가 가능.
+    pq.push({0,start}); // 시작 정점이므로 거리 정보 0과 시작 노드를 넣어줌.
+    d[start]=0; // 자기 자신은 거리가 0임.
+    while(!pq.empty()){
+        int dist=-pq.top().first; //
+        int now=pq.top().second; //현재 노드
+        pq.pop(); 
+        if(d[now]<dist) continue; //거리가 더 짧으면 갱신할 필요가 없으므로 무시
+        for(int i=0; i<graph[now].size(); i++){
+            int cost=dist+graph[now][i].second; //현재 노드로 도달하는 최단경로와 현재 노드와 다음 노드까지의 거리를 합하면 다음 노드까지의 거쳐가는 경로의 길이
+            if(cost<d[graph[now][i].first]){ //거쳐가는게 더 빠르면 
+                d[graph[now][i].first]=cost; //최단경로 갱신!
+                pq.push(make_pair(-cost,graph[now][i].first)); //경로가 갱신됐으므로 pq에 삽입
+            }
+        }
+    }
+}
+
+int main(void){
+    cin>>V>>E>>start;
+    for(int i=0; i<E; i++){
+        int a,b,c;
+        cin>>a>>b>>c;
+        graph[a].push_back({b,c}); //a->b 비용 c
+    }
+    fill(d,d+10001,INF); //경로를 모두 무한으로 설정
+    dijkstra(start); //start 지점에서의 최단 경로를 파악하기 위해 다익스트라 실행
+    
+    for (int i = 1; i <= n; i++) {
+        if (d[i] == INF) {
+            cout << "INFINITY" << '\n'; //경로가 없으면 무한 출력
+        }
+        else {
+            cout << d[i] << '\n'; //경로가 있다면 최단경로 출력
+        }
+    }
+}
